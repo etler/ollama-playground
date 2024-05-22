@@ -15,13 +15,13 @@ const content =
 const limit = limitString ? parseInt(limitString) : 10;
 
 const addMeasure = (func) => async () => {
-  const startMark = performance.mark(`${model}:start`);
+  const startTime = performance.mark("start");
   const result = await func();
-  const endMark = performance.mark(`${model}:end`);
+  const endMark = performance.mark("end");
   console.log(`${model}: ${result}`);
   console.log(
     `Time Elapsed: ${
-      performance.measure(model, startMark.name, endMark.name).duration
+      performance.measure(model, startTime.name, endMark.name).duration
     }ms`
   );
 };
@@ -64,5 +64,5 @@ if (test === null) {
 }
 
 for (let i = 0; i < limit; i++) {
-  test();
+  await test();
 }
