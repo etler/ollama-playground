@@ -48,12 +48,18 @@ const testOpenai = (model) => async () => {
   return { model, result: response.choices[0].message.content };
 };
 
+const loop = async (test) => {
+  for (let i = 0; i < limit; i++) {
+    await test();
+  }
+};
+
 const getTest = async (platform, model) => {
   switch (platform) {
     case "ollama":
-      return addMeasure(testOllama(model));
+      return loop(addMeasure(testOllama(model)));
     case "openai":
-      return addMeasure(testOpenai(model));
+      return loop(addMeasure(testOpenai(model)));
     case "config":
       const config = await fs.readFile(model, { encoding: "utf8" });
       const configParams = config
@@ -80,8 +86,4 @@ const test = await getTest(platform, model);
 if (test === null) {
   console.log("Invalid platform");
   process.exit(1);
-}
-
-for (let i = 0; i < limit; i++) {
-  await test();
 }
