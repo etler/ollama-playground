@@ -48,7 +48,7 @@ const testOpenai = (model) => async () => {
   return { model, result: response.choices[0].message.content };
 };
 
-const loop = async (test) => {
+const loop = (test) => async () => {
   for (let i = 0; i < limit; i++) {
     await test();
   }
@@ -71,19 +71,16 @@ const getTest = async (platform, model) => {
           return getTest(platform, model);
         })
       );
+
       return async () => {
         for (const test of tests) {
           await test();
         }
       };
     default:
-      return null;
+      console.error(`Invalid platform: ${platform}`);
+      process.exit(1);
   }
 };
 
-const test = await getTest(platform, model);
-
-if (test === null) {
-  console.log("Invalid platform");
-  process.exit(1);
-}
+(await getTest(platform, model))();
